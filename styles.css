@@ -64,11 +64,11 @@ nav ul li a {
   color: #e0e0e0;
   padding: 20px;
   position: absolute;
-  top: 20px;
+  top: 0px;
   left: 115px;
   border-radius: 15px;
   width: 930px;
-  height: 1100px;
+  height: 500px;
   border: 3px solid #333; /* Рамка навколо .overlay */
 }
 
@@ -87,7 +87,12 @@ nav ul li a {
   /* Plyr має власні стилі, тому додаткових стилів не потрібно */
 }
 
-/* Стилі для кнопок серій */
+/* Стилі для кнопок серій та перемикання епізодів */
+.episode-switcher, .episode-list {
+  margin: 20px auto;
+  max-width: 900px;
+}
+
 .episode-btn, #prev-episode, #next-episode {
   background-color: #666; /* Темно-сірий фон для кнопок */
   color: #e0e0e0; /* Світло-сірий текст */
@@ -105,8 +110,12 @@ nav ul li a {
 }
 
 /* Список серій */
-.episode-list {
-  margin-top: 20px;
+.episode-list h2 {
+  margin-bottom: 10px;
+}
+
+.episode-list .episode-btn {
+  display: inline-block;
 }
 
 /* Текст в футері */
@@ -149,6 +158,12 @@ footer {
     color: #fff; /* Білий текст */
 }
 
+/* Стилі для активної кнопки якості */
+.quality-btn.active {
+    background-color: #00adee; /* Синій фон для активної якості */
+    color: #fff; /* Білий текст */
+}
+
 /* Адаптація для мобільних пристроїв */
 @media (max-width: 768px) {
   .overlay {
@@ -161,5 +176,10 @@ footer {
     top: auto;
     bottom: 10px;
     right: 10px;
+  }
+
+  .episode-switcher, .episode-list {
+    max-width: 100%;
+    padding: 0 10px;
   }
 }
