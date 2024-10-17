@@ -1,0 +1,165 @@
+/* Основні стилі для сайту */
+body {
+  background-color: #2b2b2b; /* Темно-сірий фон */
+  color: #e0e0e0; /* Світло-сірий текст */
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('https://www.fonstola.ru/pic/202002/1920x1080/fonstola.ru_373605.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  z-index: -1;
+  filter: brightness(50%); /* Трохи темніший фон */
+}
+
+/* Стилі для хедера */
+header {
+  background-color: #444; /* Сірий фон для заголовка */
+  padding: 10px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 2.5em;
+}
+
+/* Стилі для навігації */
+nav ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+nav ul li {
+  display: inline;
+  margin: 0 10px;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: #b3b3b3; /* Світло-сірий текст для посилань */
+}
+
+/* Основний контент */
+.main-content {
+  display: flex;
+  margin: 20px auto;
+  position: relative;
+  max-width: 1200px; /* Максимальна ширина сторінки */
+}
+
+.overlay {
+  background-color: #111111; /* Дуже темно-сірий фон, майже чорний */
+  color: #e0e0e0;
+  padding: 20px;
+  position: absolute;
+  top: 20px;
+  left: 115px;
+  border-radius: 15px;
+  width: 930px;
+  height: 1100px;
+  border: 3px solid #333; /* Рамка навколо .overlay */
+}
+
+/* Рамка для відео */
+.frame-container {
+  border: 3px solid #333; /* Контур рамки для контейнера */
+  border-radius: 10px; /* Закруглення кутів */
+  margin: 20px auto; /* Центрування */
+  max-width: 900px; /* Максимальна ширина контейнера */
+}
+
+/* Стилі для відеоплеєра */
+.video-container {
+  position: relative;
+  width: 100%;
+  /* Plyr має власні стилі, тому додаткових стилів не потрібно */
+}
+
+/* Стилі для кнопок серій */
+.episode-btn, #prev-episode, #next-episode {
+  background-color: #666; /* Темно-сірий фон для кнопок */
+  color: #e0e0e0; /* Світло-сірий текст */
+  padding: 10px 20px;
+  border: none;
+  border-radius: 15px; /* Заокруглені кути */
+  cursor: pointer;
+  font-size: 1em;
+  margin: 5px;
+  transition: background-color 0.3s;
+}
+
+.episode-btn:hover, #prev-episode:hover, #next-episode:hover {
+  background-color: #888; /* Світліший сірий при наведенні */
+}
+
+/* Список серій */
+.episode-list {
+  margin-top: 20px;
+}
+
+/* Текст в футері */
+footer {
+  background-color: #444; /* Сірий фон */
+  padding: 20px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+/* Стилі для контейнера якості */
+.quality-container {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 5px;
+  z-index: 10;
+}
+
+.quality-btn {
+  background-color: rgba(85, 85, 85, 0.8); /* Напівпрозорий темно-сірий фон */
+  color: #e0e0e0; /* Світло-сірий текст */
+  padding: 5px 10px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.3s;
+}
+
+.quality-btn:hover, .quality-btn.active {
+  background-color: rgba(136, 136, 136, 0.9); /* Світліший сірий при наведенні та активній кнопці */
+}
+
+/* Стилі для активної кнопки серії */
+.episode-btn.active-episode {
+    background-color: #00adee; /* Синій фон для активної серії */
+    color: #fff; /* Білий текст */
+}
+
+/* Адаптація для мобільних пристроїв */
+@media (max-width: 768px) {
+  .overlay {
+    width: 80%;
+    left: 10%;
+  }
+
+  .quality-container {
+    flex-direction: column;
+    top: auto;
+    bottom: 10px;
+    right: 10px;
+  }
+}

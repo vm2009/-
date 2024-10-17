@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Демонстрація Аніме</title>
+   <link rel="stylesheet" href="styles.css">
+   <!-- Plyr CSS -->
+   <link rel="stylesheet" href="https://cdn.plyr.io/3.7.2/plyr.css" />
+</head>
+<body>
+   <header>
+      <h1>Аніме: Вбивця демонів</h1>
+      <nav>
+         <ul>
+            <li><a href="#home">Головна</a></li>
+            <li><a href="#episodes">Епізоди</a></li>
+            <li><a href="#about">Про аніме</a></li>
+         </ul>
+      </nav>
+   </header>
+   
+   <div class="main-content">
+      <div class="background-image">
+         <div class="overlay">
+            <h2>Опис аніме</h2>
+            <p>Це історія про молодого хлопця, який стає вбивцею демонів, щоб помститися за свою родину і врятувати свою сестру.</p>
+         </div>
+      </div>
+      <div class="side-image"></div>
+   </div>
+
+   <!-- Plyr Плеєр -->
+   <div class="frame-container">
+      <div class="video-container">
+         <video id="animeVideo" class="plyr" playsinline controls>
+            <source src="videos/1.720.mp4" type="video/mp4" data-quality="720p">
+            Ваш браузер не підтримує відео тег.
+         </video>
+         <!-- Кастомні елементи керування для якості -->
+         <div class="quality-container">
+            <button class="quality-btn active" data-quality="480p">480p</button>
+            <button class="quality-btn" data-quality="720p">720p</button>
+            <button class="quality-btn" data-quality="1080p">1080p</button>
+         </div>
+      </div>
+   </div>
+
+   <div class="episode-switcher">
+      <button id="prev-episode">Попередня серія</button>
+      <button id="next-episode">Наступна серія</button>
+   </div>
+   
+   <div class="episode-list">
+      <h2>Список всіх серій:</h2>
+      <button class="episode-btn" data-episode="1">1 серія</button>
+      <button class="episode-btn" data-episode="2">2 серія</button>
+      <button class="episode-btn" data-episode="3">3 серія</button>
+      <!-- Додайте більше кнопок серій за потребою -->
+   </div>
+
+   <!-- Plyr JS -->
+   <script src="https://cdn.plyr.io/3.7.2/plyr.polyfilled.js"></script>
+   <!-- HLS.js для підтримки HLS у браузерах, які не підтримують natively -->
+   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+   <!-- Ваш власний скрипт -->
+   <script src="script.js"></script> 
+</body>
+</html>
