@@ -1,0 +1,372 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { Volume2, VolumeX, Maximize, Minimize, Pause, Play } from 'lucide-react';
+
+const VideoPlayer = () => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const [volume, setVolume] = useState(1);
+  const [previousVolume, setPreviousVolume] = useState(1);
+  const [currentQuality, setCurrentQuality] = useState('1080p');
+  const [showQualityMenu, setShowQualityMenu] = useState(false);
+  const [progress, setProgress] = useState(10/1420);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showControls, setShowControls] = useState(true);
+  const [currentTime, setCurrentTime] = useState(10);
+  const [isDragging, setIsDragging] = useState(false);
+  const [seekHoverPosition, setSeekHoverPosition] = useState(null);
+  const [hoverTime, setHoverTime] = useState(null);
+  const totalDuration = 1420;
+  
+  const playerRef = useRef(null);
+  const progressRef = useRef(null);
+  const mouseTimeoutRef = useRef(null);
+  const qualities = ['1080p', '720p', '480p', '360p'];
+
+  const handleProgressHover = (e) => {
+    if (!progressRef.current) return;
+    
+    const rect = progressRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const width = rect.width;
+    const hoverPosition = Math.min(Math.max(x / width, 0), 1);
+    setSeekHoverPosition(hoverPosition);
+    setHoverTime(Math.floor(hoverPosition * totalDuration));
+  };
+
+  const handleProgressClick = (e) => {
+    if (!progressRef.current) return;
+    
+    const rect = progressRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const width = rect.width;
+    const newProgress = Math.min(Math.max(x / width, 0), 1);
+    
+    setProgress(newProgress);
+    setCurrentTime(Math.floor(newProgress * totalDuration));
+  };
+
+  const handleProgressDragStart = () => {
+    setIsDragging(true);
+  };
+
+  const handleProgressDragEnd = () => {
+    setIsDragging(false);
+  };
+
+  const handleProgressDrag = (e) => {
+    if (!isDragging || !progressRef.current) return;
+    
+    const rect = progressRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const width = rect.width;
+    const newProgress = Math.min(Math.max(x / width, 0), 1);
+    
+    setProgress(newProgress);
+    setCurrentTime(Math.floor(newProgress * totalDuration));
+  };
+
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleProgressDrag);
+      document.addEventListener('mouseup', handleProgressDragEnd);
+    }
+    
+    return () => {
+      document.removeEventListener('mousemove', handleProgressDrag);
+      document.removeEventListener('mouseup', handleProgressDragEnd);
+    };
+  }, [isDragging]);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      playerRef.current.requestFullscreen().then(() => {
+        setIsFullscreen(true);
+      }).catch(err => {
+        console.error(`Error attempting to enable fullscreen: ${err.message}`);
+      });
+    } else {
+      document.exitFullscreen().then(() => {
+        setIsFullscreen(false);
+      }).catch(err => {
+        console.error(`Error attempting to exit fullscreen: ${err.message}`);
+      });
+    }
+  };
+
+  const handleVolumeChange = (e) => {
+    const newVolume = parseFloat(e.target.value);
+    setVolume(newVolume);
+    setPreviousVolume(newVolume);
+    setIsMuted(newVolume === 0);
+  };
+
+  const adjustVolume = (delta) => {
+    const newVolume = Math.min(Math.max(volume + delta, 0), 1);
+    setVolume(newVolume);
+    setPreviousVolume(newVolume);
+    setIsMuted(newVolume === 0);
+  };
+
+  const seekVideo = (seconds) => {
+    const newTime = Math.min(Math.max(currentTime + seconds, 0), totalDuration);
+    setCurrentTime(newTime);
+    setProgress(newTime / totalDuration);
+  };
+
+  const toggleMute = () => {
+    if (isMuted) {
+      setVolume(previousVolume);
+      setIsMuted(false);
+    } else {
+      setPreviousVolume(volume);
+      setVolume(0);
+      setIsMuted(true);
+    }
+  };
+
+  const formatTime = (timeInSeconds) => {
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = Math.floor(timeInSeconds % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (document.activeElement?.tagName === 'INPUT') return;
+      
+      switch (e.key) {
+        case 'ArrowUp':
+          e.preventDefault();
+          adjustVolume(0.05);
+          break;
+        case 'ArrowDown':
+          e.preventDefault();
+          adjustVolume(-0.05);
+          break;
+        case 'ArrowLeft':
+          e.preventDefault();
+          seekVideo(-5);
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          seekVideo(5);
+          break;
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [volume, currentTime]);
+
+  const handleMouseMove = () => {
+    if (isFullscreen) {
+      setShowControls(true);
+      
+      if (mouseTimeoutRef.current) {
+        clearTimeout(mouseTimeoutRef.current);
+      }
+      
+      mouseTimeoutRef.current = setTimeout(() => {
+        if (!showQualityMenu) {
+          setShowControls(false);
+        }
+      }, 2000);
+    }
+  };
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      const isFullscreenNow = !!document.fullscreenElement;
+      setIsFullscreen(isFullscreenNow);
+      setShowControls(true);
+      
+      if (!isFullscreenNow && mouseTimeoutRef.current) {
+        clearTimeout(mouseTimeoutRef.current);
+      }
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      if (mouseTimeoutRef.current) {
+        clearTimeout(mouseTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (showQualityMenu) {
+      setShowControls(true);
+      if (mouseTimeoutRef.current) {
+        clearTimeout(mouseTimeoutRef.current);
+      }
+    }
+  }, [showQualityMenu]);
+
+  return (
+    <div 
+      ref={playerRef}
+      className={`relative bg-gray-900 rounded-lg overflow-hidden
+        ${isFullscreen ? 'fixed inset-0 w-screen h-screen z-50' : 'w-full max-w-4xl'}`}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={() => {
+        isFullscreen && setShowControls(false);
+        setSeekHoverPosition(null);
+        setHoverTime(null);
+      }}
+      tabIndex="0"
+    >
+      {/* Video placeholder */}
+      <div className={`bg-gray-800 ${isFullscreen ? 'w-screen h-screen' : 'w-full h-64'}`}>
+        <div className="w-full h-full bg-gradient-to-t from-gray-700 to-gray-600 flex items-center justify-center">
+          <span className="text-gray-400">Video Content</span>
+        </div>
+      </div>
+
+      {/* Controls overlay */}
+      <div 
+        className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-4
+          transition-all duration-300 transform
+          ${showControls ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-full'}`}
+      >
+        <div className="flex flex-col gap-2 max-w-screen-2xl mx-auto">
+          {/* Progress bar */}
+          <div 
+            ref={progressRef}
+            className="w-full h-4 py-1.5 cursor-pointer group relative"
+            onClick={handleProgressClick}
+            onMouseDown={handleProgressDragStart}
+            onMouseMove={handleProgressHover}
+            onMouseLeave={() => {
+              setSeekHoverPosition(null);
+              setHoverTime(null);
+            }}
+          >
+            {/* Time preview tooltip */}
+            {seekHoverPosition !== null && hoverTime !== null && (
+              <div 
+                className="absolute bottom-full mb-2 transform -translate-x-1/2 bg-black/80 text-white text-sm px-2 py-1 rounded"
+                style={{ left: `${seekHoverPosition * 100}%` }}
+              >
+                {formatTime(hoverTime)}
+              </div>
+            )}
+            
+            <div className="relative w-full h-1 bg-gray-600 rounded">
+              {/* Progress fill */}
+              <div 
+                className="absolute left-0 top-0 h-full bg-blue-500 rounded transition-all duration-150" 
+                style={{ width: `${progress * 100}%` }}
+              />
+              
+              {/* Hover preview circle */}
+              {seekHoverPosition !== null && (
+                <div 
+                  className="absolute top-1/2 -mt-2 -ml-2 w-4 h-4 bg-white/20 rounded-full transition-all"
+                  style={{ left: `${seekHoverPosition * 100}%` }}
+                >
+                  <div className="absolute inset-1 bg-white rounded-full" />
+                </div>
+              )}
+              
+              {/* Active progress circle */}
+              <div 
+                className={`absolute top-1/2 -mt-2 -ml-2 w-4 h-4 bg-blue-500/20 rounded-full transition-all
+                  ${(isDragging || seekHoverPosition !== null) ? 'opacity-100 scale-100' : 'opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100'}`}
+                style={{ left: `${progress * 100}%` }}
+              >
+                <div className="absolute inset-1 bg-blue-500 rounded-full" />
+              </div>
+            </div>
+          </div>
+
+          {/* Controls */}
+          <div className="flex items-center gap-4">
+            {/* Play/Pause */}
+            <button 
+              className="text-white hover:text-blue-400 transition"
+              onClick={() => setIsPlaying(!isPlaying)}
+            >
+              {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+            </button>
+
+            {/* Volume control */}
+            <div className="flex items-center gap-2 w-32">
+              <button 
+                className="text-white hover:text-blue-400 transition"
+                onClick={toggleMute}
+              >
+                {volume === 0 ? <VolumeX size={20} /> : <Volume2 size={20} />}
+              </button>
+              
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={volume}
+                onChange={handleVolumeChange}
+                className="w-full h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer
+                  [&::-webkit-slider-thumb]:appearance-none
+                  [&::-webkit-slider-thumb]:w-3
+                  [&::-webkit-slider-thumb]:h-3
+                  [&::-webkit-slider-thumb]:bg-white
+                  [&::-webkit-slider-thumb]:rounded-full
+                  [&::-webkit-slider-thumb]:cursor-pointer"
+              />
+            </div>
+
+            {/* Time */}
+            <span className="text-white text-sm">
+              {formatTime(currentTime)} / {formatTime(totalDuration)}
+            </span>
+
+            <div className="flex-grow" />
+
+            {/* Quality selector */}
+            <div className="relative">
+              <button 
+                className="text-white text-sm px-2 py-1 rounded hover:bg-gray-700 transition"
+                onClick={() => setShowQualityMenu(!showQualityMenu)}
+              >
+                {currentQuality}
+              </button>
+              
+              {showQualityMenu && (
+                <div className="absolute bottom-full right-0 mb-2 bg-gray-800 rounded shadow-lg">
+                  {qualities.map(quality => (
+                    <button
+                      key={quality}
+                      className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-700 transition
+                        ${quality === currentQuality ? 'text-blue-400' : 'text-white'}`}
+                      onClick={() => {
+                        setCurrentQuality(quality);
+                        setShowQualityMenu(false);
+                      }}
+                    >
+                      {quality}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Fullscreen */}
+            <button 
+              className="text-white hover:text-blue-400 transition"
+              onClick={toggleFullscreen}
+            >
+              {isFullscreen ? <Minimize size={20} /> : <Maximize size={20} />}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default VideoPlayer;
