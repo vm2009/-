@@ -25,24 +25,49 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let currentEpisode = 1;
 
-    // Ініціалізація Plyr
+    // Ініціалізація Plyr з доданою кнопкою ">>"
     const player = new Plyr('#animeVideo', {
         controls: [
-            'play-large', // велика кнопка play
-            'play', // кнопка play
-            'progress', // прогрес-бар
-            'current-time', // поточний час
-            'mute', // кнопка вимкнення звуку
-            'volume', // регулятор гучності
-            'settings', // кнопка налаштувань
-            'fullscreen' // кнопка повноекранного режиму
+            'play-large',
+            'rewind', // Кнопка перемотування назад
+            'play',
+            'fast-forward', // Кнопка перемотування вперед (наша кнопка ">>")
+            'progress',
+            'current-time',
+            'mute',
+            'volume',
+            'settings',
+            'fullscreen'
         ],
-        settings: ['quality', 'speed', 'loop'], // Налаштування, доступні для користувача
+        settings: ['quality', 'speed', 'loop'],
         quality: {
-            default: 720, // Якість за замовчуванням
+            default: 720,
             options: [1080, 720, 480],
-            forced: true, // Примусове використання якостей з options
+            forced: true,
         },
+    });
+
+    // Додаємо функціонал для кнопки ">>"
+    function addFastForwardFunctionality() {
+        const fastForwardButton = player.elements.controls.querySelector('.plyr__controls__item[data-plyr="fast-forward"]');
+
+        if (fastForwardButton) {
+            // Видаляємо попередній обробник, якщо він був
+            fastForwardButton.removeEventListener('click', fastForward);
+
+            // Додаємо новий обробник
+            fastForwardButton.addEventListener('click', fastForward);
+        }
+    }
+
+    // Функція перемотування вперед на 80 секунд
+    function fastForward() {
+        player.currentTime += 76; // Змінити на потрібний час у секундах
+    }
+
+    // Викликаємо функцію після ініціалізації плеєра
+    player.on('ready', () => {
+        addFastForwardFunctionality();
     });
 
     // Функція для завантаження відео
@@ -51,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const sources = [];
 
         for (let quality in episodeSources) {
-            const size = parseInt(quality.replace('p', '')); // Витягуємо числове значення якості
+            const size = parseInt(quality.replace('p', ''));
             sources.push({
                 src: episodeSources[quality],
                 type: 'video/mp4',
@@ -69,6 +94,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Відтворюємо відео, коли плеєр готовий
         player.once('ready', () => {
             player.play();
+            addFastForwardFunctionality(); // Оновлюємо функціонал кнопки ">>" після завантаження нового відео
         });
 
         // Оновлюємо активну кнопку епізоду
