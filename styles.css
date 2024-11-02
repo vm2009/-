@@ -116,38 +116,8 @@ nav ul li a {
   display: inline-block;
 }
 
-/* Стилі для контейнера якості */
-.quality-container {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  display: flex;
-  gap: 5px;
-  z-index: 10;
-}
-
-.quality-btn {
-  background-color: rgba(85, 85, 85, 0.8); /* Напівпрозорий темно-сірий фон */
-  color: #e0e0e0; /* Світло-сірий текст */
-  padding: 5px 10px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 0.9em;
-  transition: background-color 0.3s;
-}
-
-.quality-btn:hover, .quality-btn.active {
-  background-color: rgba(136, 136, 136, 0.9); /* Світліший сірий при наведенні та активній кнопці */
-}
-
 .episode-btn.active-episode {
     background-color: #00adee; /* Синій фон для активної серії */
-    color: #fff; /* Білий текст */
-}
-
-.quality-btn.active {
-    background-color: #00adee; /* Синій фон для активної якості */
     color: #fff; /* Білий текст */
 }
 
@@ -155,13 +125,6 @@ nav ul li a {
   .overlay {
     width: 80%;
     left: 10%;
-  }
-
-  .quality-container {
-    flex-direction: column;
-    top: auto;
-    bottom: 10px;
-    right: 10px;
   }
 
   .episode-switcher, .episode-list {
